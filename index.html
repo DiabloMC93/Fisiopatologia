@@ -3,852 +3,578 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test de Conocimientos</title>
+    <title>Examen de Fisiología</title>
     <style>
-        /* --- ESTILOS CSS --- */
+        :root {
+            --primary: #3b82f6; /* Azul moderno */
+            --primary-dark: #2563eb;
+            --success: #10b981; /* Verde esmeralda */
+            --error: #ef4444; /* Rojo suave */
+            --bg: #f8fafc; /* Gris muy claro */
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-sec: #64748b;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+        /* Contenedor Principal (Tarjeta) */
+        .app-container {
+            background-color: var(--card);
+            width: 100%;
+            max-width: 700px;
+            min-height: 500px; /* Altura mínima para consistencia */
+            margin: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
-        h1 {
-            color: #007bff;
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-        }
-        .question-block {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #fafafa;
-        }
-        .question-text {
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-            color: #2c3e50;
-        }
-        .option label {
-            display: block;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .option label:hover {
-            background-color: #e9e9e9;
-        }
-        .option input[type="radio"] {
-            margin-right: 10px;
-        }
-        .controls {
+
+        /* Cabecera con estadísticas */
+        .header {
+            background-color: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 30px;
-            padding: 15px;
-            background-color: #e9ecef;
+        }
+
+        .counters {
+            display: flex;
+            gap: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .counter-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .c-correct { background-color: #d1fae5; color: #065f46; }
+        .c-wrong { background-color: #fee2e2; color: #991b1b; }
+        
+        /* Barra de progreso */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #e2e8f0;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Área de contenido (Preguntas) */
+        .content-area {
+            padding: 40px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            
+            /* Animación de entrada */
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-number {
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            color: var(--text-main);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px 20px;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex; /* Para alinear letra y texto */
+            gap: 10px;
+        }
+
+        .option-letter {
+            font-weight: bold;
+            color: var(--primary);
+            min-width: 25px; /* Ancho fijo para alineación */
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+            transform: translateY(-2px);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        /* Estilos de validación */
+        .option-btn.correct {
+            border-color: var(--success);
+            background-color: #d1fae5;
+            color: #065f46;
+            font-weight: 600;
+        }
+        
+        .option-btn.correct .option-letter {
+            color: #065f46; /* Cambiar color letra en acierto */
+        }
+        
+        .option-btn.correct::after {
+            content: "✓";
+            position: absolute;
+            right: 20px;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            border-color: var(--error);
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .option-btn.wrong .option-letter {
+            color: #991b1b;
+        }
+        
+        .option-btn.wrong::after {
+            content: "✕";
+            position: absolute;
+            right: 20px;
+            font-weight: bold;
+        }
+
+        /* Botón Siguiente */
+        .footer-controls {
+            padding: 20px 40px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            background-color: #f8fafc;
+        }
+
+        .next-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
             border-radius: 8px;
-            border-left: 5px solid #007bff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: none; /* Oculto hasta responder */
         }
-        .counter {
-            font-size: 1.2em;
-            font-weight: bold;
+
+        .next-btn:hover {
+            background-color: var(--primary-dark);
         }
-        .score {
-            text-align: right;
+
+        /* Pantalla de Resultados */
+        .results-screen {
+            text-align: center;
+            padding: 30px 20px;
+            display: none; /* Oculto inicialmente */
         }
-        .score span {
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-left: 10px;
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            background: conic-gradient(var(--primary) 0%, #e2e8f0 0%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        #correct-count {
-            background-color: #28a745;
+        
+        .score-circle::before {
+            content: "";
+            width: 140px;
+            height: 140px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .score-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+        }
+        
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .message {
+            font-size: 1.3rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .stats-summary {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            color: var(--text-sec);
+            font-size: 0.95rem;
+        }
+
+        .restart-btn {
+            background-color: var(--primary);
             color: white;
+            padding: 15px 35px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
         }
-        #incorrect-count {
-            background-color: #dc3545;
-            color: white;
+        
+        .restart-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
         }
-        /* Estilos para la retroalimentación de respuestas */
-        .correct-answer {
-            background-color: #d4edda !important;
-            border: 1px solid #c3e6cb;
-        }
-        .incorrect-answer {
-            background-color: #f8d7da !important;
-            border: 1px solid #f5c6cb;
-        }
+
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Test de Conocimientos (40 Preguntas)</h1>
+<div class="app-container">
+    <!-- Barra de progreso superior -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
 
-        <div class="controls">
-            <div class="counter" id="question-counter">Pregunta 1 de 40</div>
-            <div class="score">
-                Aciertos: <span id="correct-count">0</span>
-                Errores: <span id="incorrect-count">0</span>
+    <!-- Cabecera -->
+    <header class="header" id="app-header">
+        <div class="counters">
+            <div class="counter-item c-correct">
+                <span>Correctas:</span>
+                <span id="score-correct">0</span>
+            </div>
+            <div class="counter-item c-wrong">
+                <span>Incorrectas:</span>
+                <span id="score-wrong">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Área de Pregunta -->
+    <div class="content-area" id="quiz-area">
+        <div class="question-number" id="q-number">PREGUNTA 1 DE 40</div>
+        <div class="question-text" id="q-text">Cargando...</div>
+        <div class="options-list" id="options-list">
+            <!-- Botones generados por JS -->
+        </div>
+    </div>
+
+    <!-- Área de Resultados (oculta al inicio) -->
+    <div class="results-screen content-area" id="results-area">
+        <h2 style="color: var(--primary); margin-bottom: 20px;">Resultados del Examen</h2>
+        
+        <div class="score-circle" id="score-circle">
+            <div class="score-content">
+                <span class="score-number" id="final-grade">0.00</span>
+                <span class="score-label">NOTA FINAL</span>
             </div>
         </div>
 
-        <form id="quiz-form">
-            <div class="question-block" data-correct-option="D" id="q1">
-                <p class="question-text">1. En relación con el equilibrio hidrosalino, un déficit de agua:</p>
-                <div class="option">
-                    <label><input type="radio" name="q1" value="A"> A. Promueve la síntesis de ADH.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q1" value="B"> B. Aumenta la reabsorción de agua por los riñones.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q1" value="C"> C. Estimula la sensación de sed.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q1" value="D"> D. Todas las respuestas son correctas.</label>
-                </div>
-            </div>
+        <p class="message" id="final-message">Calculando...</p>
+        
+        <div class="stats-summary">
+            <div>✅ <span id="final-correct">0</span> Aciertos (+0.25)</div>
+            <div>❌ <span id="final-wrong">0</span> Fallos (-0.08)</div>
+        </div>
 
-            <div class="question-block" data-correct-option="A" id="q2">
-                <p class="question-text">2. Ausencia focal o general del tejido adiposo:</p>
-                <div class="option">
-                    <label><input type="radio" name="q2" value="A"> A. Lipoatrofia</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q2" value="B"> B. Lipohipertrofia</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q2" value="C"> C. Lipogénesis</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q2" value="D"> D. Lipomatosis</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q3">
-                <p class="question-text">3. Bacteria responsable de numerosas patologías a nivel de estómago e intestino (úlceras, gastritis, cáncer...):</p>
-                <div class="option">
-                    <label><input type="radio" name="q3" value="A"> A. Helicobacter pylori</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q3" value="B"> B. Escherichia coli</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q3" value="C"> C. Streptococcus pyogenes</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q3" value="D"> D. Staphylococcus aureus</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q4">
-                <p class="question-text">4. El borde de cepillo o microvellosidades del intestino delgado ayudan a:</p>
-                <div class="option">
-                    <label><input type="radio" name="q4" value="A"> A. Aumentar la superficie de absorción de los nutrientes.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q4" value="B"> B. Proteger el intestino de bacterias y virus.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q4" value="C"> C. Regular la temperatura interna del cuerpo.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q4" value="D"> D. Producir enzimas digestivas para descomponer los alimentos.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q5">
-                <p class="question-text">5. El componente con mayor peso (60-65%) en el cálculo del gasto energético total es:</p>
-                <div class="option">
-                    <label><input type="radio" name="q5" value="A"> A. Gasto energético basal (GEB).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q5" value="B"> B. Efecto térmico de los alimentos (ETA).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q5" value="C"> C. Gasto energético por actividad física (GEAF).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q5" value="D"> D. Ninguna es correcta.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q6">
-                <p class="question-text">6. El síndrome de secreción inadecuada de antidiurética (SIADH) consiste en un aumento de la liberación de:</p>
-                <div class="option">
-                    <label><input type="radio" name="q6" value="A"> A. Vasopresina</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q6" value="B"> B. Prolactina</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q6" value="C"> C. Hormona tiroidea</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q6" value="D"> D. Todas las respuestas son correctas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="C" id="q7">
-                <p class="question-text">7. El término leucemia, hace referencia a:</p>
-                <div class="option">
-                    <label><input type="radio" name="q7" value="A"> A. Un aumento en los niveles de progesterona.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q7" value="B"> B. Un descenso en el número de leucocitos.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q7" value="C"> C. Un aumento en el número de leucocitos.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q7" value="D"> D. Un descenso en los niveles de progesterona.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q8">
-                <p class="question-text">8. En cuanto a la regulación de la síntesis de ácidos grasos, esta es estimulada por:</p>
-                <div class="option">
-                    <label><input type="radio" name="q8" value="A"> A. Insulina</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q8" value="B"> B. Glucagón</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q8" value="C"> C. A y B son ciertas.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q8" value="D"> D. A y B son falsas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q9">
-                <p class="question-text">9. En el control del hambre y la saciedad, el péptido YY:</p>
-                <div class="option">
-                    <label><input type="radio" name="q9" value="A"> A. Es una señal orexigénica, estimula el apetito.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q9" value="B"> B. Es una señal orexigénica, inhibe el hambre.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q9" value="C"> C. Es una señal anorexigénica, estimula el apetito.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q9" value="D"> D. Es una señal anorexigénica, inhibe el hambre.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q10">
-                <p class="question-text">10. En relación con las alteraciones musculares, la contracción sostenida del músculo se conoce como:</p>
-                <div class="option">
-                    <label><input type="radio" name="q10" value="A"> A. Tetania</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q10" value="B"> B. Mialgia</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q10" value="C"> C. Atrofia</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q10" value="D"> D. Hipertrofia.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q11">
-                <p class="question-text">11. Enfermedad crónica de tipo autoinmune, que afecta al intestino delgado y que genera intolerancia al gluten en los pacientes que la presentan:</p>
-                <div class="option">
-                    <label><input type="radio" name="q11" value="A"> A. Enfermedad celíaca.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q11" value="B"> B. Enfermedad de Whipple.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q11" value="C"> C. Enfermedad de Crohn.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q11" value="D"> D. Enfermedad diverticular.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q12">
-                <p class="question-text">12. Entre las hormonas liberadas por la hipófisis, se encuentra:</p>
-                <div class="option">
-                    <label><input type="radio" name="q12" value="A"> A. Hormona del crecimiento (GH).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q12" value="B"> B. Prolactina (PRL).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q12" value="C"> C. Hormona corticotropina (ACTH).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q12" value="D"> D. Todas son correctas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q13">
-                <p class="question-text">13. Entre las inmunodeficiencias primarias, encontramos:</p>
-                <div class="option">
-                    <label><input type="radio" name="q13" value="A"> A. Inmunodeficiencia combinada severa.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q13" value="B"> B. Déficit selectivo de IgA.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q13" value="C"> C. Inmunodeficiencia variable común.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q13" value="D"> D. Todas son correctas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q14">
-                <p class="question-text">14. Entre las patologías asociadas a la cavidad oral se encuentra:</p>
-                <div class="option">
-                    <label><input type="radio" name="q14" value="A"> A. Herpes labial.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q14" value="B"> B. Caries.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q14" value="C"> C. Úlceras bucales.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q14" value="D"> D. Todas son correctas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q15">
-                <p class="question-text">15. Entre las patologías asociadas al tejido óseo, encontramos:</p>
-                <div class="option">
-                    <label><input type="radio" name="q15" value="A"> A. Osteomalacia</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q15" value="B"> B. Raquitismo</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q15" value="C"> C. Enfermedad de Paget</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q15" value="D"> D. Todas son correctas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q16">
-                <p class="question-text">16. Entre las recomendaciones establecidas para pacientes con patología pancreática se encuentra:</p>
-                <div class="option">
-                    <label><input type="radio" name="q16" value="A"> A. Consumo exógeno de enzimas pancreáticas.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q16" value="B"> B. Consumo de suplementos nutricionales ante posibles pérdidas de peso.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q16" value="C"> C. Consumo moderado de alimentos, evitando comidas copiosas y ayunos prolongados.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q16" value="D"> D. Todas las anteriores son recomendaciones válidas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q17">
-                <p class="question-text">17. Entre los factores no modificables que influyen en el desarrollo del cáncer, encontramos:</p>
-                <div class="option">
-                    <label><input type="radio" name="q17" value="A"> A. Mutación hereditaria en el gen BRCA1.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q17" value="B"> B. Consumo de tabaco.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q17" value="C"> C. Exposición a rayos UV.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q17" value="D"> D. Infección por Helicobacter pylori.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q18">
-                <p class="question-text">18. Este valor de glucemia en ayunas indica diabetes:</p>
-                <div class="option">
-                    <label><input type="radio" name="q18" value="A"> A. Mayor o igual a $76~mg/dL$</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q18" value="B"> B. Mayor o igual a $126~mg/dL$</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q18" value="C"> C. Mayor o igual a $200~mg/dL$</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q18" value="D"> D. Mayor o igual a $376~mg/dL$</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q19">
-                <p class="question-text">19. Gasto energético derivado de cualquier movimiento:</p>
-                <div class="option">
-                    <label><input type="radio" name="q19" value="A"> A. Gasto energético basal (GEB).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q19" value="B"> B. Gasto energético por actividad física (GEAF).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q19" value="C"> C. Efecto término de los alimentos (ETA).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q19" value="D"> D. Gasto energético nutritivo (GEN).</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q20">
-                <p class="question-text">20. Indica la relación incorrecta entre la patología y sus consecuencias:</p>
-                <div class="option">
-                    <label><input type="radio" name="q20" value="A"> A. Alzheimer - Alteración de la memoria</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q20" value="B"> B. Escotoma - Alteración visual</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q20" value="C"> C. Hipoacusia - Alteración auditiva</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q20" value="D"> D. Nistagmo - Alteración del sueño</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q21">
-                <p class="question-text">21. Inmunoglobulina más abundante a nivel sérico, y la principal secretada en respuestas inmunológicas secundarias:</p>
-                <div class="option">
-                    <label><input type="radio" name="q21" value="A"> A. IgG</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q21" value="B"> B. IgD</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q21" value="C"> C. IgM</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q21" value="D"> D. IgE</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="C" id="q22">
-                <p class="question-text">22. La aldosterona, el cortisol y la adrenalina son producidos en:</p>
-                <div class="option">
-                    <label><input type="radio" name="q22" value="A"> A. Los testículos u ovarios.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q22" value="B"> B. El tiroides.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q22" value="C"> C. Las glándulas suprarrenales.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q22" value="D"> D. El paratiroides.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q23">
-                <p class="question-text">23. La anemia se ocasiona por:</p>
-                <div class="option">
-                    <label><input type="radio" name="q23" value="A"> A. Déficit de hierro</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q23" value="B"> B. Déficit de vitamina B12</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q23" value="C"> C. Déficit de folato</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q23" value="D"> D. Todas las anteriores son posibles causas de anemia.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q24">
-                <p class="question-text">24. La diabetes tipo 2 es una:</p>
-                <div class="option">
-                    <label><input type="radio" name="q24" value="A"> A. Hipoglucemia de tipo autoinmune.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q24" value="B"> B. Hipoglucemia asociada a hábitos o predisposición genética.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q24" value="C"> C. Hiperglucemia de tipo autoinmune.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q24" value="D"> D. Hiperglucemia asociada a hábitos o predisposición genética.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q25">
-                <p class="question-text">25. La energía aportada por cada gramo de macronutriente es:</p>
-                <div class="option">
-                    <label><input type="radio" name="q25" value="A"> A. Hidratos de carbono: 4kcal; proteínas: 4kcal; lípidos: 9kcal.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q25" value="B"> B. Hidratos de carbono: 9kcal; proteínas: 4kcal; lípidos: 4kcal.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q25" value="C"> C. Hidratos de carbono: 4kcal; proteínas: 9kcal; lípidos: 4kcal.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q25" value="D"> D. Hidratos de carbono: 4kcal; proteínas: 4kcal; lípidos: 4kcal.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q26">
-                <p class="question-text">26. La escala de Glasgow es empleada para:</p>
-                <div class="option">
-                    <label><input type="radio" name="q26" value="A"> A. Evaluar el nivel de equilibrio de una persona.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q26" value="B"> B. Evaluar el nivel de consciencia de una persona.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q26" value="C"> C. Evaluar la capacidad respiratoria de una persona.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q26" value="D"> D. Evaluar las capacidades de cálculo matemático de una persona.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q27">
-                <p class="question-text">27. La gastroparesia es una condición que afecta a:</p>
-                <div class="option">
-                    <label><input type="radio" name="q27" value="A"> A. El esófago</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q27" value="B"> B. El estómago</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q27" value="C"> C. La faringe</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q27" value="D"> D. La boca</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q28">
-                <p class="question-text">28. La hemocromatosis es una patología caracterizada por la acumulación tisular de:</p>
-                <div class="option">
-                    <label><input type="radio" name="q28" value="A"> A. Calcio</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q28" value="B"> B. Hierro</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q28" value="C"> C. Cromo</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q28" value="D"> D. Magnesio</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q29">
-                <p class="question-text">29. La insulina se produce en:</p>
-                <div class="option">
-                    <label><input type="radio" name="q29" value="A"> A. El hígado.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q29" value="B"> B. El páncreas.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q29" value="C"> C. El intestino delgado.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q29" value="D"> D. La vesícula biliar.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q30">
-                <p class="question-text">30. La saliva se caracteriza por la presencia de:</p>
-                <div class="option">
-                    <label><input type="radio" name="q30" value="A"> A. Amilasas, para digerir carbohidratos.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q30" value="B"> B. Lipasas, para digerir lípidos.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q30" value="C"> C. Proteinasas, para digerir proteínas.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q30" value="D"> D. Ácido clorhídrico, para favorecer la degradación del alimento.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q31">
-                <p class="question-text">31. Las inmunodeficiencias primarias:</p>
-                <div class="option">
-                    <label><input type="radio" name="q31" value="A"> A. Son enfermedades derivadas por un déficit de alguno de los componentes del sistema inmunológico, y que se manifiesta desde el nacimiento.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q31" value="B"> B. Son enfermedades que derivan de una mala función de un sistema inmunológico que previamente funcionaba correctamente.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q31" value="C"> C. Se denominan también inmunodeficiencias natales.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q31" value="D"> D. El SIDA, ocasionado por el VIH, es un tipo de inmunodeficiencia primaria.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q31" value="E"> E. Todas las respuestas son correctas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q32">
-                <p class="question-text">32. Las sales biliares secretadas por el hígado son cruciales para la digestión de:</p>
-                <div class="option">
-                    <label><input type="radio" name="q32" value="A"> A. Las proteínas</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q32" value="B"> B. Los lípidos</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q32" value="C"> C. Los hidratos de carbono</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q32" value="D"> D. Las vitaminas</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q33">
-                <p class="question-text">33. Los aminoácidos se clasifican habitualmente en dos grupos:</p>
-                <div class="option">
-                    <label><input type="radio" name="q33" value="A"> A. Esenciales (deben ser consumidos en la dieta) y no esenciales (sintetizados por nuestro organismo).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q33" value="B"> B. Esenciales (solo se encuentran en fuentes animales) y no esenciales (se encuentran en fuentes vegetales).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q33" value="C"> C. Esenciales (se producen a partir de compuestos simples) y no esenciales (requieren fuentes externas).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q33" value="D"> D. Esenciales (sintetizados por nuestro organismo) y no esenciales (deben ser consumidos en la dieta).</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q34">
-                <p class="question-text">34. Los jugos gástricos contienen:</p>
-                <div class="option">
-                    <label><input type="radio" name="q34" value="A"> A. Ácido clorhídrico</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q34" value="B"> B. Pepsinógeno</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q34" value="C"> C. Bicarbonato</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q34" value="D"> D. Todas son correctas.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="C" id="q35">
-                <p class="question-text">35. Molécula encargada de actuar sobre el hipotalámico para estimular la termogénesis y la aparición de fiebre:</p>
-                <div class="option">
-                    <label><input type="radio" name="q35" value="A"> A. Interleuquina 1 (IL-1).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q35" value="B"> B. Interleuquina 6 (IL-6).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q35" value="C"> C. Prostaglandina E2 (PGE2).</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q35" value="D"> D. Prostaglandina E3 (PGE3).</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="C" id="q36">
-                <p class="question-text">36. No es una recomendación orientada a prevenir el cáncer:</p>
-                <div class="option">
-                    <label><input type="radio" name="q36" value="A"> A. Reducir el consumo de grasas por debajo de un 30% del aporte calórico total.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q36" value="B"> B. Reducir el consumo de grasas saturadas por debajo de un 10% del aporte calórico total.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q36" value="C"> C. Incrementar el consumo de carne roja y procesada en la dieta.</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q36" value="D"> D. Limitar el consumo de alcohol y tabaco.</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q37">
-                <p class="question-text">37. Obstrucción irreversible del flujo aéreo, derivada de una inflamación del tejido pulmonar frente a la presencia de partículas como contaminantes ambientales, humo de tabaco...:</p>
-                <div class="option">
-                    <label><input type="radio" name="q37" value="A"> A. Asma</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q37" value="B"> B. Enfermedad pulmonar obstructiva crónica (EPOC)</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q37" value="C"> C. Derrame pleural</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q37" value="D"> D. Enfermedad pulmonar intersticial</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="B" id="q38">
-                <p class="question-text">38. Respuesta fallida, desmesurada o insuficiente del sistema inmune de un organismo frente a una infección:</p>
-                <div class="option">
-                    <label><input type="radio" name="q38" value="A"> A. Asepsia</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q38" value="B"> B. Sepsis</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q38" value="C"> C. Neoplasia</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q38" value="D"> D. Síndrome de disfunción de órganos múltiples</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="D" id="q39">
-                <p class="question-text">39. Se entiende por fiebre un aumento de temperatura corporal superior a:</p>
-                <div class="option">
-                    <label><input type="radio" name="q39" value="A"> A. 30 ºC</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q39" value="B"> B. 32 ºC</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q39" value="C"> C. 36 ºC</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q39" value="D"> D. 38 ºC</label>
-                </div>
-            </div>
-
-            <div class="question-block" data-correct-option="A" id="q40">
-                <p class="question-text">40. Su hiperfunción puede ocasionar acromegalia o gigantismo:</p>
-                <div class="option">
-                    <label><input type="radio" name="q40" value="A"> A. Hormona del crecimiento</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q40" value="B"> B. Aldosterona</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q40" value="C"> C. Prolactina</label>
-                </div>
-                <div class="option">
-                    <label><input type="radio" name="q40" value="D"> D. Vasopresina</label>
-                </div>
-            </div>
-
-            <button type="submit" id="submit-button">Finalizar Test y Corregir</button>
-        </form>
+        <div>
+            <button class="restart-btn" onclick="restartQuiz()">Volver a intentar</button>
+        </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const quizForm = document.getElementById('quiz-form');
-            const questionBlocks = document.querySelectorAll('.question-block');
-            const questionCounter = document.getElementById('question-counter');
-            const correctCountDisplay = document.getElementById('correct-count');
-            const incorrectCountDisplay = document.getElementById('incorrect-count');
-            const submitButton = document.getElementById('submit-button');
+    <!-- Controles -->
+    <footer class="footer-controls" id="quiz-footer">
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Siguiente Pregunta &rarr;</button>
+    </footer>
+</div>
 
-            const totalQuestions = questionBlocks.length;
-            let correctCount = 0;
-            let incorrectCount = 0;
+<script>
+    // DATOS DE LAS PREGUNTAS (Extraídos del PDF)
+    const questions = [
+        { q: "En relación con el equilibrio hidrosalino, un déficit de agua:", options: ["Promueve la síntesis de ADH.", "Aumenta la reabsorción de agua por los riñones.", "Estimula la sensación de sed.", "Todas las respuestas son correctas."], correct: 3 },
+        { q: "Ausencia focal o general del tejido adiposo:", options: ["Lipoatrofia", "Lipohipertrofia", "Lipogénesis", "Lipomatosis"], correct: 0 },
+        { q: "Bacteria responsable de numerosas patologías a nivel de estómago e intestino (úlceras, gastritis, cáncer...):", options: ["Helicobacter pylori", "Escherichia coli", "Streptococcus pyogenes", "Staphylococcus aureus"], correct: 0 },
+        { q: "El borde de cepillo o microvellosidades del intestino delgado ayudan a:", options: ["Aumentar la superficie de absorción de los nutrientes.", "Proteger el intestino de bacterias y virus.", "Regular la temperatura interna del cuerpo.", "Producir enzimas digestivas para descomponer los alimentos."], correct: 0 },
+        { q: "El componente con mayor peso (60-65%) en el cálculo del gasto energético total es:", options: ["Gasto energético basal (GEB).", "Efecto térmico de los alimentos (ETA).", "Gasto energético por actividad física (GEAF).", "Ninguna es correcta."], correct: 0 },
+        { q: "El síndrome de secreción inadecuada de antidiurética (SIADH) consiste en un aumento de la liberación de:", options: ["Vasopresina", "Prolactina", "Hormona tiroidea", "Todas las respuestas son correctas"], correct: 0 },
+        { q: "El término leucemia, hace referencia a:", options: ["Un aumento en los niveles de progesterona.", "Un descenso en el número de leucocitos.", "Un aumento en el número de leucocitos.", "Un descenso en los niveles de progesterona."], correct: 2 },
+        { q: "En cuanto a la regulación de la síntesis de ácidos grasos, esta es estimulada por:", options: ["Insulina", "Glucagón", "A y B son ciertas.", "A y B son falsas."], correct: 0 },
+        { q: "En el control del hambre y la saciedad, el péptido YY:", options: ["Es una señal orexigénica, estimula el apetito.", "Es una señal orexigénica, inhibe el hambre.", "Es una señal anorexigénica, estimula el apetito.", "Es una señal anorexigénica, inhibe el hambre."], correct: 3 },
+        { q: "En relación con las alteraciones musculares, la contracción sostenida del músculo se conoce como:", options: ["Tetania", "Mialgia", "Atrofia", "Hipertrofia."], correct: 0 },
+        { q: "Enfermedad crónica de tipo autoinmune, que afecta al intestino delgado y que genera intolerancia al gluten:", options: ["Enfermedad celíaca.", "Enfermedad de Whipple.", "Enfermedad de Crohn.", "Enfermedad diverticular."], correct: 0 },
+        { q: "Entre las hormonas liberadas por la hipófisis, se encuentra:", options: ["Hormona del crecimiento (GH).", "Prolactina (PRL).", "Hormona corticotropina (ACTH).", "Todas son correctas."], correct: 3 },
+        { q: "Entre las inmunodeficiencias primarias, encontramos:", options: ["Inmunodeficiencia combinada severa.", "Déficit selectivo de IgA.", "Inmunodeficiencia variable común.", "Todas son correctas."], correct: 3 },
+        { q: "Entre las patologías asociadas a la cavidad oral se encuentra:", options: ["Herpes labial.", "Caries.", "Úlceras bucales.", "Todas son correctas."], correct: 3 },
+        { q: "Entre las patologías asociadas al tejido óseo, encontramos:", options: ["Osteomalacia", "Raquitismo", "Enfermedad de Paget", "Todas son correctas."], correct: 3 },
+        { q: "Entre las recomendaciones establecidas para pacientes con patología pancreática se encuentra:", options: ["Consumo exógeno de enzimas pancreáticas.", "Consumo de suplementos nutricionales ante posibles pérdidas de peso.", "Consumo moderado de alimentos, evitando comidas copiosas.", "Todas las anteriores son recomendaciones válidas."], correct: 3 },
+        { q: "Entre los factores no modificables que influyen en el desarrollo del cáncer, encontramos:", options: ["Mutación hereditaria en el gen BRCA1.", "Consumo de tabaco.", "Exposición a rayos UV.", "Infección por Helicobacter pylori."], correct: 0 },
+        { q: "Este valor de glucemia en ayunas indica diabetes:", options: ["Mayor o igual a 76 mg/dL", "Mayor o igual a 126 mg/dL", "Mayor o igual a 200 mg/dL", "Mayor o igual a 376 mg/dL"], correct: 1 },
+        { q: "Gasto energético derivado de cualquier movimiento:", options: ["Gasto energético basal (GEB).", "Gasto energético por actividad física (GEAF).", "Efecto térmico de los alimentos (ETA).", "Gasto energético nutritivo (GEN)."], correct: 1 },
+        { q: "Indica la relación incorrecta entre la patología y sus consecuencias:", options: ["Alzheimer - Alteración de la memoria", "Escotoma - Alteración visual", "Hipoacusia - Alteración auditiva", "Nistagmo - Alteración del sueño"], correct: 3 },
+        { q: "Inmunoglobulina más abundante a nivel sérico, y la principal secretada en respuestas inmunológicas secundarias:", options: ["IgG", "IgD", "IgM", "IgE"], correct: 0 },
+        { q: "La aldosterona, el cortisol y la adrenalina son producidos en:", options: ["Los testículos u ovarios.", "El tiroides.", "Las glándulas suprarrenales.", "El paratiroides."], correct: 2 },
+        { q: "La anemia se ocasiona por:", options: ["Déficit de hierro", "Déficit de vitamina B12", "Déficit de folato", "Todas las anteriores son posibles causas de anemia."], correct: 3 },
+        { q: "La diabetes tipo 2 es una:", options: ["Hipoglucemia de tipo autoinmune.", "Hipoglucemia asociada a hábitos.", "Hiperglucemia de tipo autoinmune.", "Hiperglucemia asociada a hábitos o predisposición genética."], correct: 3 },
+        { q: "La energía aportada por cada gramo de macronutriente es:", options: ["HC: 4kcal; Prot: 4kcal; Líp: 9kcal.", "HC: 9kcal; Prot: 4kcal; Líp: 4kcal.", "HC: 4kcal; Prot: 9kcal; Líp: 4kcal.", "HC: 4kcal; Prot: 4kcal; Líp: 4kcal."], correct: 0 },
+        { q: "La escala de Glasgow es empleada para:", options: ["Evaluar el nivel de equilibrio de una persona.", "Evaluar el nivel de consciencia de una persona.", "Evaluar la capacidad respiratoria de una persona.", "Evaluar las capacidades de cálculo matemático."], correct: 1 },
+        { q: "La gastroparesia es una condición que afecta a:", options: ["El esófago", "El estómago", "La faringe", "La boca"], correct: 1 },
+        { q: "La hemocromatosis es una patología caracterizada por la acumulación tisular de:", options: ["Calcio", "Hierro", "Cromo", "Magnesio"], correct: 1 },
+        { q: "La insulina se produce en:", options: ["El hígado.", "El páncreas.", "El intestino delgado.", "La vesícula biliar."], correct: 1 },
+        { q: "La saliva se caracteriza por la presencia de:", options: ["Amilasas, para digerir carbohidratos.", "Lipasas, para digerir lípidos.", "Proteinasas, para digerir proteínas.", "Ácido clorhídrico."], correct: 0 },
+        { q: "Las inmunodeficiencias primarias:", options: ["Son enfermedades derivadas por déficit del sistema inmune desde el nacimiento.", "Son enfermedades de mala función inmune adquirida.", "Se denominan también inmunodeficiencias natales.", "El SIDA es un tipo de inmunodeficiencia primaria."], correct: 0 },
+        { q: "Las sales biliares secretadas por el hígado son cruciales para la digestión de:", options: ["Las proteínas", "Los lípidos", "Los hidratos de carbono", "Las vitaminas"], correct: 1 },
+        { q: "Los aminoácidos se clasifican habitualmente en dos grupos:", options: ["Esenciales (dieta) y no esenciales (sintetizados).", "Esenciales (animal) y no esenciales (vegetal).", "Esenciales (simples) y no esenciales (externos).", "Esenciales (sintetizados) y no esenciales (dieta)."], correct: 0 },
+        { q: "Los jugos gástricos contienen:", options: ["Ácido clorhídrico", "Pepsinógeno", "Bicarbonato", "Todas son correctas."], correct: 3 },
+        { q: "Molécula encargada de actuar sobre el hipotálamo para estimular la termogénesis y fiebre:", options: ["Interleuquina 1 (IL-1).", "Interleuquina 6 (IL-6).", "Prostaglandina E2 (PGE2).", "Prostaglandina E3 (PGE3)."], correct: 2 },
+        { q: "No es una recomendación orientada a prevenir el cáncer:", options: ["Reducir el consumo de grasas por debajo de un 30%.", "Reducir grasas saturadas por debajo de un 10%.", "Incrementar el consumo de carne roja y procesada.", "Limitar el consumo de alcohol y tabaco."], correct: 2 },
+        { q: "Obstrucción irreversible del flujo aéreo por inflamación (humo, contaminantes):", options: ["Asma", "Enfermedad pulmonar obstructiva crónica (EPOC)", "Derrame pleural", "Enfermedad pulmonar intersticial"], correct: 1 },
+        { q: "Respuesta fallida, desmesurada o insuficiente del sistema inmune frente a una infección:", options: ["Asepsia", "Sepsis", "Neoplasia", "Síndrome de disfunción de órganos múltiples"], correct: 1 },
+        { q: "Se entiende por fiebre un aumento de temperatura corporal superior a:", options: ["30 ºC", "32 ºC", "36 ºC", "38 ºC"], correct: 3 },
+        { q: "Su hiperfunción puede ocasionar acromegalia o gigantismo:", options: ["Hormona del crecimiento", "Aldosterona", "Prolactina", "Vasopresina"], correct: 0 }
+    ];
 
-            // Inicializar el contador de preguntas (ej. 1 de 40)
-            questionCounter.textContent = `Preguntas: ${totalQuestions}`;
+    // ESTADO DE LA APLICACIÓN
+    let currentIdx = 0;
+    let scoreCorrect = 0;
+    let scoreWrong = 0;
 
-            // Función para actualizar el contador de aciertos y errores
-            const updateScore = () => {
-                correctCountDisplay.textContent = correctCount;
-                incorrectCountDisplay.textContent = incorrectCount;
-            };
+    // REFERENCIAS AL DOM
+    const ui = {
+        progressBar: document.getElementById('progress-bar'),
+        scoreCorrect: document.getElementById('score-correct'),
+        scoreWrong: document.getElementById('score-wrong'),
+        qNumber: document.getElementById('q-number'),
+        qText: document.getElementById('q-text'),
+        optionsList: document.getElementById('options-list'),
+        nextBtn: document.getElementById('next-btn'),
+        quizArea: document.getElementById('quiz-area'),
+        resultsArea: document.getElementById('results-area'),
+        appHeader: document.getElementById('app-header'),
+        quizFooter: document.getElementById('quiz-footer'),
+        finalGrade: document.getElementById('final-grade'),
+        scoreCircle: document.getElementById('score-circle'),
+        finalMessage: document.getElementById('final-message'),
+        finalCorrect: document.getElementById('final-correct'),
+        finalWrong: document.getElementById('final-wrong')
+    };
 
-            // Listener para el envío del formulario
-            quizForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                correctCount = 0;
-                incorrectCount = 0;
+    function initQuiz() {
+        currentIdx = 0;
+        scoreCorrect = 0;
+        scoreWrong = 0;
+        
+        // Reset UI
+        ui.resultsArea.style.display = 'none';
+        ui.quizArea.style.display = 'flex';
+        ui.appHeader.style.display = 'flex';
+        ui.quizFooter.style.display = 'flex';
+        
+        updateStats();
+        loadQuestion();
+    }
 
-                questionBlocks.forEach(block => {
-                    const questionName = block.id;
-                    const correctOptionValue = block.getAttribute('data-correct-option');
-                    const selectedOption = block.querySelector(`input[name="${questionName}"]:checked`);
-                    
-                    // Limpiar clases de retroalimentación previas
-                    block.querySelectorAll('.option label').forEach(label => {
-                        label.classList.remove('correct-answer', 'incorrect-answer');
-                    });
+    function updateStats() {
+        ui.scoreCorrect.innerText = scoreCorrect;
+        ui.scoreWrong.innerText = scoreWrong;
+        // Barra de progreso
+        const progress = ((currentIdx) / questions.length) * 100;
+        ui.progressBar.style.width = `${progress}%`;
+    }
 
-                    // Si se seleccionó una opción
-                    if (selectedOption) {
-                        const selectedValue = selectedOption.value;
-                        const selectedLabel = selectedOption.closest('label');
-                        
-                        // Determinar si es correcta o incorrecta
-                        if (selectedValue === correctOptionValue) {
-                            correctCount++;
-                            selectedLabel.classList.add('correct-answer');
-                        } else {
-                            incorrectCount++;
-                            selectedLabel.classList.add('incorrect-answer');
-                            
-                            // Marcar la respuesta correcta también para mostrarla
-                            const correctOption = block.querySelector(`input[name="${questionName}"][value="${correctOptionValue}"]`);
-                            if (correctOption) {
-                                correctOption.closest('label').classList.add('correct-answer');
-                            }
-                        }
-                    } else {
-                        // Si no se seleccionó, solo marcar la correcta (puede contarse como error o no contestada)
-                        incorrectCount++; // Contar como error si no se contesta.
-                        const correctOption = block.querySelector(`input[name="${questionName}"][value="${correctOptionValue}"]`);
-                        if (correctOption) {
-                            correctOption.closest('label').classList.add('correct-answer');
-                        }
-                    }
-                });
+    function loadQuestion() {
+        // Efecto visual: Pequeño fade in al cargar
+        ui.quizArea.style.animation = 'none';
+        ui.quizArea.offsetHeight; /* trigger reflow */
+        ui.quizArea.style.animation = 'fadeIn 0.5s ease-out';
 
-                updateScore();
-                submitButton.textContent = "Test Corregido. ¡Revisar!";
-                submitButton.disabled = true;
-                alert(`Test Finalizado. Aciertos: ${correctCount}, Errores: ${incorrectCount}.`);
-            });
+        const q = questions[currentIdx];
+        
+        ui.qNumber.innerText = `PREGUNTA ${currentIdx + 1} DE ${questions.length}`;
+        ui.qText.innerText = q.q;
+        ui.optionsList.innerHTML = '';
+        ui.nextBtn.style.display = 'none';
 
-            // Opcional: Permitir la revisión individual al hacer clic, pero solo si el test no ha sido corregido.
-            questionBlocks.forEach(block => {
-                block.addEventListener('click', (e) => {
-                    if (submitButton.disabled) return; // Evita corrección individual si ya se finalizó el test.
+        const letters = ['A.', 'B.', 'C.', 'D.', 'E.', 'F.']; 
 
-                    const questionName = block.id;
-                    const selectedOption = block.querySelector(`input[name="${questionName}"]:checked`);
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            
+            const letterSpan = document.createElement('span');
+            letterSpan.className = 'option-letter';
+            letterSpan.innerText = letters[index] || '';
+            
+            const textSpan = document.createElement('span');
+            textSpan.innerText = opt;
 
-                    // Si no se ha seleccionado nada, no hacer nada.
-                    if (!selectedOption) return;
-
-                    // Opcional: Podrías añadir lógica aquí para dar una pista o corregir al momento de seleccionar.
-                    // Para este ejemplo, la corrección completa ocurre al final (al enviar el formulario).
-                });
-            });
-
+            btn.appendChild(letterSpan);
+            btn.appendChild(textSpan);
+            
+            btn.onclick = () => selectOption(index, btn);
+            ui.optionsList.appendChild(btn);
         });
-    </script>
+
+        updateStats();
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+        if (ui.nextBtn.style.display === 'block') return;
+
+        const q = questions[currentIdx];
+        const buttons = ui.optionsList.querySelectorAll('.option-btn');
+
+        buttons.forEach(b => b.disabled = true);
+
+        if (selectedIndex === q.correct) {
+            btnElement.classList.add('correct');
+            scoreCorrect++;
+        } else {
+            btnElement.classList.add('wrong');
+            buttons[q.correct].classList.add('correct');
+            scoreWrong++;
+        }
+
+        updateStats();
+        ui.nextBtn.style.display = 'block';
+        ui.nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        // Ocultar elementos del quiz
+        ui.quizArea.style.display = 'none';
+        ui.appHeader.style.display = 'none';
+        ui.quizFooter.style.display = 'none';
+        ui.progressBar.style.width = '100%';
+        
+        // Mostrar resultados
+        ui.resultsArea.style.display = 'block';
+        
+        // CÁLCULO DE LA NOTA
+        // Acierto = +0.25, Error = -0.08
+        // Nota Máxima = 40 * 0.25 = 10
+        let rawScore = (scoreCorrect * 0.25) - (scoreWrong * 0.08);
+        
+        // Evitar notas negativas visuales si se desea, aunque académicamente se mantienen.
+        // Aquí mostramos el valor real, pero no bajamos de 0 para el gráfico.
+        if (rawScore < 0) rawScore = 0; 
+
+        // Mostrar nota con 2 decimales
+        ui.finalGrade.innerText = rawScore.toFixed(2);
+        
+        // Mostrar desglose
+        ui.finalCorrect.innerText = scoreCorrect;
+        ui.finalWrong.innerText = scoreWrong;
+
+        // Configurar gráfico circular (basado en porcentaje sobre 10)
+        // Nota: Si la nota es 10, es el 100% del círculo.
+        const percentage = (rawScore / 10) * 100;
+        const color = rawScore >= 5 ? 'var(--success)' : 'var(--error)';
+        
+        ui.scoreCircle.style.background = `conic-gradient(${color} ${percentage}%, #e2e8f0 ${percentage}%)`;
+        ui.finalGrade.style.color = color;
+
+        // Mensaje personalizado basado en la nota sobre 10
+        if (rawScore >= 9) {
+            ui.finalMessage.innerText = "¡Sobresaliente! Excelente trabajo.";
+        } else if (rawScore >= 7) {
+            ui.finalMessage.innerText = "¡Notable! Muy buen resultado.";
+        } else if (rawScore >= 5) {
+            ui.finalMessage.innerText = "Aprobado. Buen esfuerzo.";
+        } else {
+            ui.finalMessage.innerText = "Suspenso. Necesitas repasar más.";
+        }
+    }
+
+    function restartQuiz() {
+        initQuiz();
+    }
+
+    initQuiz();
+</script>
 
 </body>
 </html>
